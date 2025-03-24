@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, mixins
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
@@ -20,7 +20,7 @@ class CatViewSet(viewsets.ModelViewSet):
         # и разрешим работу со списком объектов
         serializer = self.get_serializer(cats, many=True)
         return Response(serializer.data)
-    
+
     def get_serializer_class(self):
         # Если запрошенное действие (action) – получение списка объектов ('list')
         if self.action == 'list':
@@ -33,3 +33,16 @@ class CatViewSet(viewsets.ModelViewSet):
 class OwnerViewSet(viewsets.ModelViewSet):
     queryset = Owner.objects.all()
     serializer_class = OwnerSerializer
+
+
+class CreateRetrieveViewSet(
+    mixins.CreateModelMixin,
+    mixins.RetrieveModelMixin,
+    viewsets.GenericViewSet
+):
+    pass
+
+
+class LightCatViewSet(CreateRetrieveViewSet):
+    queryset = Cat.objects.all()
+    serializer_class = CatSerializer
